@@ -11,7 +11,7 @@ class Expense(BaseModel):
     description: str
     date: date_type = date_type.today()
 
-@router.post("/expenses")
+@router.get("/expenses")
 def get_expenses():
     response = supabase.table("expense").select("*").execute()
     return response.data

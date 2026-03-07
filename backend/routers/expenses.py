@@ -13,12 +13,12 @@ class Expense(BaseModel):
 
 @router.post("/expenses")
 def get_expenses():
-    response = supabase.table("expenses").select("*").execute()
+    response = supabase.table("expense").select("*").execute()
     return response.data
 
 @router.post("/expenses")
 def add_expense(expense: Expense):
-    response = supabase.table("expenses").insert({
+    response = supabase.table("expense").insert({
         "amount": expense.amount,
         "category": expense.category,
         "description": expense.description,

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts"
+
 const API = "http://127.0.0.1:8000/api"
 
 const CATEGORIES = ["Food", "Transport", "Rent", "Shopping", "Entertainment", "Health", "Education", "Other"]
@@ -45,6 +47,15 @@ export default function App() {
   }
 
   const total = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0)
+
+  const categoryTotals = expenses.reduce((acc, e) => {
+    acc[e.category] = (acc[e.category] || 0) + parseFloat(e.amount)
+    return acc
+  }, {})
+
+  const chartData = Object.entries(categoryTotals).map(([name, value]) => ({ name, value: parseFloat(value.toFixed(2))}))
+
+  const COLORS = ["#10B981", "#34D399", "#6EE7B7", "#059669", "#047857", "#065F46", "#A7F3D0", "#D1FAE5"]
 
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif" }} className="min-h-screen bg-gray-950 text-white">
@@ -103,6 +114,42 @@ export default function App() {
 
         {/* Transactions List */}
         <div>
+          {chartData.length > 0 && (
+            <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 mb-8">
+              <h2 className="font-semibold mb-4 text-gray-200">Spending by Category</h2>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={70}
+                    outerRadius={110}
+                    fpaddingAngle={3}
+                    dataKey="value"
+                    nameKey="name"
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "#111827", border: "1px solid #1F2937", borderRadius: "12px", color: "#fff"}}
+                      formatter={(value, name) => [`£${value}`, name.charAt(0).toUpperCase() + name.slice(1)]}
+                      labelFormatter={() => ""}
+                      />
+                  </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap gap-3 mt-4">
+                {chartData.map((entry,index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                    <span className="text-gray-400 text-sm">{entry.name.charAt(0).toUpperCase() + entry.name.slice(1)} · £{entry.value}</span>
+                    </div>
+                ))}
+            </div>
+            </div>
+          )}
           <h2 className="font-semibold mb-4 text-gray-200">Recent Transactions</h2>
           <div className="flex flex-col gap-3">
             {expenses.length === 0 && (

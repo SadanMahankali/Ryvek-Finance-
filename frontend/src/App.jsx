@@ -46,6 +46,15 @@ export default function App() {
     setLoading(false)
   }
 
+  const deleteExpense = async (id) => {
+   try {
+     await axios.delete(`${API}/expenses/${id}`)
+     fetchExpenses()
+   } catch (err) {
+     console.error(err)
+   }
+ } 
+
   const total = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0)
 
   const categoryTotals = expenses.reduce((acc, e) => {
@@ -112,6 +121,10 @@ export default function App() {
           </button>
         </div>
 
+        
+       
+
+
         {/* Transactions List */}
         <div>
           {chartData.length > 0 && (
@@ -166,7 +179,10 @@ export default function App() {
                     <p className="text-gray-500 text-xs mt-0.5">{e.category} · {e.date}</p>
                   </div>
                 </div>
+                <div className="flex items-center gap-3">
                 <p style={{ fontFamily: "'DM Mono', monospace" }} className="text-emerald-400 font-medium">£{parseFloat(e.amount).toFixed(2)}</p>
+                <button onClick={() => deleteExpense(e.id)} className="text-gray-600 hover:text-red-400 transition-colors text-lg">✕</button>
+               </div>
               </div>
             ))}
           </div>

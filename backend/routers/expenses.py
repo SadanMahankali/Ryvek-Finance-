@@ -25,3 +25,8 @@ def add_expense(expense: Expense):
         "date": str(expense.date)
     }).execute()
     return response.data
+
+@router.delete("/expenses/{expense_id}")
+def delete_expense(expense_id: str):
+    response = supabase.table("expense").delete().eq("id", expense_id).execute()
+    return response.data
